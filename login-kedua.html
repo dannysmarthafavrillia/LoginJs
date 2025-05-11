@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Circular Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0077;
+        }
+
+        .circle-1,.circle-2,.circle-3 {
+            border: 2px solid;
+        }
+
+        .circle-1 {
+            animation: rotate-1 4s linear infinite;
+            border-radius: 30%;
+        }
+        
+        .circle-2 {
+            animation: rotate-2 4s linear infinite;
+            border-radius: 30%;
+        }
+        
+        .circle-3 {
+            animation: rotate-3 6s linear infinite;
+            border-radius: 30%;
+        }
+        
+        @keyframes rotate-1 {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes rotate-2 {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
+        @keyframes rotate-3 {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-container {
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            background-color: black;
+        }
+
+        #loginForm {
+            height: 50px;
+            width: 250px;
+            position: absolute;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-login {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        
+        .btn-login:hover {
+            transform: scale(0.9);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .link-text {
+            transition: all 0.2s ease;
+        }
+        
+        .link-text:hover {
+            color: #6366f1;
+            text-decoration: underline;
+            transform: scale(0.9);
+        }
+        
+        .error-message {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center overflow-hidden relative">
+    <!-- Background circles -->
+        <div class="circle-1 absolute w-96 h-96"></div>
+        <div class="circle-2 absolute w-96 h-96"></div>
+        <div class="circle-3 absolute w-96 h-96"></div>
+    
+    <!-- Login container -->
+    <div class="login-container bg-none rounded-full h-96 w-96 ">
+        <div class="text-center mb-8">
+            <i class="fas fa-user-circle text-5xl text-indigo-400 mt-1"></i>
+            <h1 class="text-2xl font-bold text-white">Welcome Back</h1>
+            <p class="text-gray-400">Please login to your account</p>
+        </div>
+        
+        <form id="loginForm" class="">
+            <div class="mb-4">
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="email" id="email" placeholder="Email Address" 
+                           class="input-field w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 " required>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="password" id="password" placeholder="Password" 
+                           class="input-field w-full pl-10 pr-4 py-2 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                </div>
+            </div>
+            
+            <div id="errorMessage" class="text-red-400 text-sm mb-4 hidden error-message"></div>
+            
+            <button type="submit" class="btn-login w-full py-2 px-4 rounded-full text-white font-semibold mb-4">
+                Login
+            </button>
+            
+            <div class="flex justify-between text-sm">
+                <a href="#" id="registerLink" class="link-text text-indigo-400">Create Account</a>
+                <a href="#" id="forgotPasswordLink" class="link-text text-gray-400">Forgot Password?</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Register Modal -->
+    <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div id="register" class="rounded-2xl p-8 max-w-md w-full relative">
+            <button id="closeRegisterModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Create Account</h2>
+            
+            <form id="registerForm">
+                <div class="mb-4">
+                    <label for="registerEmail" class="block text-gray-400 mb-2">Email</label>
+                    <input type="email" id="registerEmail" required 
+                           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="registerPassword" class="block text-gray-400 mb-2">Password</label>
+                    <input type="password" id="registerPassword" required 
+                           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="confirmPassword" class="block text-gray-400 mb-2">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required 
+                           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                
+                <div id="registerErrorMessage" class="text-red-400 text-sm mb-4 hidden"></div>
+                
+                <button type="submit" class="w-full py-2 px-4 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full relative">
+            <button id="closeForgotPasswordModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Reset Password</h2>
+            
+            <form id="forgotPasswordForm">
+                <div class="mb-6">
+                    <p class="text-gray-400 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <input type="email" id="recoveryEmail" placeholder="Your email address" required 
+                           class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                
+                <div id="forgotPasswordMessage" class="text-green-400 text-sm mb-4 hidden"></div>
+                
+                <button type="submit" class="w-full py-2 px-4 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
+                    Send Recovery Link
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Check if users exist in localStorage
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify([]));
+        }
+        
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const registerLink = document.getElementById('registerLink');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        const registerModal = document.getElementById('registerModal');
+        const registerForm = document.getElementById('registerForm');
+        const closeRegisterModal = document.getElementById('closeRegisterModal');
+        const registerErrorMessage = document.getElementById('registerErrorMessage');
+        
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const closeForgotPasswordModal = document.getElementById('closeForgotPasswordModal');
+        const forgotPasswordMessage = document.getElementById('forgotPasswordMessage');
+        
+        // Event listeners
+        registerLink.addEventListener('click', () => {
+            registerModal.classList.remove('hidden');
+        });
+        
+        closeRegisterModal.addEventListener('click', () => {
+            registerModal.classList.add('hidden');
+            registerForm.reset();
+            registerErrorMessage.classList.add('hidden');
+        });
+        
+        forgotPasswordLink.addEventListener('click', () => {
+            forgotPasswordModal.classList.remove('hidden');
+        });
+        
+        closeForgotPasswordModal.addEventListener('click', () => {
+            forgotPasswordModal.classList.add('hidden');
+            forgotPasswordForm.reset();
+            forgotPasswordMessage.classList.add('hidden');
+        });
+        
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Successful login
+                errorMessage.classList.add('hidden');
+                alert('Login successful! Redirecting to dashboard...');
+                // In a real app, you would redirect here
+                // window.location.href = 'dashboard.html';
+            } else {
+                // Failed login
+                errorMessage.textContent = 'Invalid email or password. Please try again or register.';
+                errorMessage.classList.remove('hidden');
+            }
+        });
+        
+        // Register form submission
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                registerErrorMessage.textContent = 'Passwords do not match!';
+                registerErrorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userExists = users.some(u => u.email === email);
+            
+            if (userExists) {
+                registerErrorMessage.textContent = 'Email already registered!';
+                registerErrorMessage.classList.remove('hidden');
+            } else {
+                // Add new user
+                users.push({ email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Show success and close modal
+                alert('Registration successful! Please login with your new credentials.');
+                registerModal.classList.add('hidden');
+                registerForm.reset();
+                registerErrorMessage.classList.add('hidden');
+                
+                // Pre-fill login form with new email
+                document.getElementById('email').value = email;
+                document.getElementById('password').focus();
+            }
+        });
+        
+        // Forgot password form submission
+        forgotPasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('recoveryEmail').value;
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userExists = users.some(u => u.email === email);
+            
+            if (userExists) {
+                forgotPasswordMessage.textContent = `Recovery link sent to ${email} (simulated)`;
+                forgotPasswordMessage.classList.remove('hidden');
+                
+                // In a real app, you would send an email here
+                setTimeout(() => {
+                    forgotPasswordModal.classList.add('hidden');
+                    forgotPasswordForm.reset();
+                    forgotPasswordMessage.classList.add('hidden');
+                }, 3000);
+            } else {
+                forgotPasswordMessage.textContent = 'Email not found. Please register first.';
+                forgotPasswordMessage.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
